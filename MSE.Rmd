@@ -1,0 +1,158 @@
+---
+title: "MSE"
+author: "Dung Vu Tien Viet"
+date: "31 octobre 2018"
+output: html_document
+---
+
+## 1. General formula of MSE
+
+One hospital is characterized by four parameters $(n_c, n_h, p_c, p_h)$ where
+
+* $n_c$ is the number community-acquired infection samples;
+* $n_h$ is the number of hospital-acquired infection samples;
+* $p_c$ is the prevelance of resistance among community-acquired infections;
+* $p_h$ is the prevalence of resistance among hospital-acquired infections.
+
+Our aim is to find the best (in term of MSE) estimator $\hat{p_c}$ of $p_c$.
+
+In absence of information on $n_c$, $n_h$ and $p_h$, the best estimator
+of $p_c$ we can get is
+
+$$
+\hat{p_c} = \frac{n_c p_c + n_h p_h}{n_c + n_h}
+$$
+By definition,
+
+$$
+\mbox{MSE}\left(\hat{p_c}\right) = \mbox{Var}\left(\hat{p_c}\right) + 
+                                   \mbox{Bias}\left(\hat{p_c}\right)^2 =
+                 \frac{\hat{p_c} \left(1 - \hat{p_c}\right)} {n_c + n_h} +
+                 \left(\hat{p_c} - p_c\right)^2
+$$
+
+which gives
+
+$$
+\mbox{MSE}\left(\hat{p_c}\right) =
+\frac{(n_cp_c+n_hp_h)(n_cq_c+n_hq_h)}{(n_c+n_h)^3} +
+\left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2
+$$
+with $q_c = 1 - p_c$ and $q_h = 1 - p_h$.
+
+> you have to validate this formula with simulations. Show a figure.
+
+Variance depends on value of $n_c,\ n_h$, but bias depends on ratio $\frac{n_c}{n_h}$
+
+> how do you know??? You have to prove it!
+
+In case of $k$ hospitals, each hospital is characterized by four parameters. We
+suppose the resistance prevalence among CAI ($p_c$) remains constant in all 
+hospitals. So the MSE will be represented by a set of parameters $(n_{c1},\dots,n_{ck},n_{h1},\dots,n_{hk},p_c,p_{h1},\dots,p_{hk},)$
+
+$$
+\hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})}
+$$
+And
+
+$$
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\left(1-\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\right)}{\sum_{}(n_{ci}+n_{hi})}+\left(\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}-p_c\right)^2
+$$
+which gives
+
+$$
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}n_{ci}+n_{hi})^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2
+$$
+
+> You need to validate this with simulations with 2 hospitals and 3 hospitals.
+
+## 2. Variation of MSE
+
+We continue to consider following cases:
+
++ One type of hospital with $t_1$ hospitals
+
++ Two types of hospital with $t_1$ and $t_2$ hospitals
+
++ Three types of hospital with $t_1$, $t_2$ and $t_3$ hospitals
+
+Hospitals are considered as same type if they have same parameters.
+
+### 2.1. One type of hospital
+
+Given $t_1$ hospitals having $(n_c,n_h,p_c,p_h),\ q_c=1-p_c,\ q_h=1-p_h$.
+
+$$
+MSE=\frac{t_1(n_{c}p_c +n_{h}p_{h})t_1(n_{c}q_c +n_{h}q_{h})}
+{(t_1(n_{c}+n_{h}))^3} +
+\frac{(t_1(n_{h}(p_{h}-p_c)))^2}
+{(t_1(n_{c}+n_{h}))^2}
+$$
+
+
+$$
+MSE=\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}
+{t_1(n_{c}+n_{h})^3} +
+\frac{n_{h}^2(p_{h}-p_c)^2}
+{(n_{c}+n_{h})^2}
+$$
+
+
+$p_h$ and $p_c$ are fix (or constant?). Assign $r=\frac{n_c}{n_h}$ and $n=n_c+n_h$
+
+The variation of bias $(\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})$ depends on $\frac{n_{h}}{(n_{c}+n_{h})}$ = $\frac{1}{(r+1)}$. But $r$ is fix in one hospital (but we do not know). So the bias is constant.
+
+The variation of variance $\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}{t_1(n_{c}+n_{h})^3}$ depends on number of hospital $t_1$ and sample size in one hospital $n$. 
+
+
+$$
+Variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}
+$$
+ Thus, the variance depends on number of hospital $t_1$ and sample size in one hospital $n$.
+
+> All these formulas need to be validated with simulations! Same comments for the
+next 2 sections
+
+### 2.2. Two types of hospital
+
+Given $t_1$ hospitals having $(n_{c1},n_{h1},p_c,p_{h1}),\ q_c=1-p_c,\ q_{h1}=1-p_{h1}$ and $t_2$ hospitals having $(n_{c2},n_{h2},p_c,p_{h2}),\ q_{h2}=1-p_{h2}$.
+
+$$
+MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3} +
+\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}
+$$
+
+### 2.3. Three types of hospital
+
+Given $t_1$ hospitals having $(n_{c1},n_{h1},p_c,p_{h1}),\ q_c=1-p_c,\ q_{h1}=1-p_{h1}$, $t_2$ hospitals having $(n_{c2},n_{h2},p_c,p_{h2}),\ q_{h2}=1-p_{h2}$ and  $t_3$ hospitals having $(n_{c3},n_{h3},p_c,p_{h3}),\ q_{h3}=1-p_{h3}$.
+
+$$
+MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2})+t_3(n_{c3}p_c +n_{h3}p_{h3}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))+t_3(n_{c3}q_c +n_{h3}q_{h3}))}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^3} +
+\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c)+t_3n_{h3}(p_{h3}-p_c))^2}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^2}
+$$
+
+### 2.4. Compare bias, variance and MSE between three cases
+
+#### 2.4.1. One type vesus two types of hospital (same number of hospital)
+
+We compare first surveillance system ($t_1+t_2$ hospitals of type 1) and second system ($t_1$ hospitals of type 1 and $t_2$ hospitals of type 2)
+
+Bias comparison
+
+$$
+\Delta B=\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}-\frac{n_{h1}^2(p_{h1}-p_c)^2}{(n_{c1}+n_{h1})^2}
+$$
+Variance comparison
+$$
+\Delta V=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3}-
+\frac{(n_{c1}p_c +n_{h1}p_{h1})(n_{c1}q_c +n_{h1}q_{h1})}
+{(t_1+t_2)(n_{c1}+n_{h1})^3}
+$$
+
+How $\Delta B$ and $\Delta V$ vary in function of $t_1$ and $t_2$?
+

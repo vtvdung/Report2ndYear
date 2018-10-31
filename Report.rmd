@@ -5,9 +5,143 @@ date: "30 octobre 2018"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+
+# 1. Introduction
+## 1.1. AMR situation
+## 1.2. AMR surveillance in Viet Nam
+### 1.2.1. List of projects
+### 1.2.2. Limitations of AMR surveillance systems
+## 1.3. Hypothesises and research questions
+
+First hypothesis: Human and economic resources for AMR surveillance in Viet Nam are not adequatelly allocated.
+
+First research question: How to optimize the performance and cost/performance ratio of AMR surveillance system in Viet Nam?
+
+
+Second hypothesis: The AMR prevalence among patients having community-acquired infection is overestimated and AMR prevalence among patients having community-acquired infection is underestimated because we take into account patients having hospital-acquired infection in our calculation.
+
+Second research question: How to estimate properly the AMR prevalence among patients having CAI?
+
+**Note: Second hypothesis and research question were changed**
+
+## 1.4. Objectives
+
+General objective: Optimize the AMR surveillance system in Viet Nam
+
+Specific objectives:
+
+* Determine critical steps affecting the performance of AMRSS in Vietnam
+* Develop and model a pilot AMR surveillance protocol
+* Evaluate model’s performance and determine performance threshold of pilot AMR surveillance protocol when factors change
+* Optimize the variation of cost-performance ratio of AMRSS
+
+**Note: First objective change: I do not use "important risk factors" term anymore**
+
+**Note: Second objective change:**
+
+
+
+## 1.5. Main activities
+
+Activity 1: Determine critical steps affecting the performance of AMRSS in Vietnam
+
+
+Activity 2: Develop a pilot AMR surveillance protocol
+
+Activity 3: Evaluate model’s performance and determine performance threshold of pilot AMRSS when factors change
+
+Activity 4: Assess the variation of cost-performance ratio of AMRSS
+
+Perform an economic evaluation each simulation loop (activity 3)
+
+Calculate cost, then calculate cost/performance ratio.
+
+
+
+# 2. Progress
+## 2.1. Activities
+* Activity 1: Done 
+    * Literature review: Done first draft of manuscript
+    * Evaluation of AMRSS in Viet Nam: Done 
+    * Determine critical steps: Done 
+* Activity 2:
+    * MSE formula: Developping formula
+    * MSE comparison between different settings: Not yet
+* Activity 3 
+    * Simulation procedure developing: Done
+    * Data preparing: Done
+* Activity 4
+    * Economic evaluation method: In progress
+    * Cost data preparing: Done
+
+
+## 2.2. Training
+
+## 2.3. Paper
+
+# 3. Result
+### 3.1. Activity 1
+
+
+### 3.2. Activity 2
+
+### 3.3. Activity 3
+
+### 3.4. Activity 4
+
+
+Summary table
+
+
+```{r echo = FALSE, results = 'asis'}
+library(knitr)
+
+objective1 <- "Determine critical steps affecting the performance of AMRSS in Vietnam"
+objective2 <- "Develop and model a pilot AMR surveillance protocol"
+objective3 <- "Evaluate model’s performance and determine performance threshold of pilot AMR surveillance protocol when factors change"
+objective4 <- "Optimize the variation of cost-performance ratio of AMRSS"
+
+activity1.1 <- "Review of AMR surveillance system over the world. We use the Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) guideline to conduct a literature review on AMR surveillance systems over the world."
+activity1.2 <- "Evaluation of AMRSS in Viet Nam. All AMR surveillance projects in Viet Nam were in consideration. We use SurvTools as a guide to describe the evaluation context and choose appropriated assessment method. OASIS tool was also used to assess the strengths and weaknesses of surveillance system."
+activity1.3 <- "Determine critical steps affecting the performance of AMRSS basing on the evaluation result"
+
+activity2.1 <- "Develop a general formula to calculate Mean Squared Error(MSE) of AMR prevalence. MSE measures the error of a prevalence estimator"
+activity2.2 <- "Compare MSE of surveillance settings. These settings are different in number of each hospital per type and region. Number of patient of each hospital varies."
+activity2.3 <- "Estimate the AMR prevalence among CAI and HAI. We separate patients in two groups of cAI and HAI basing on all input information."
+
+activity3.1 <- "Prepare baseline data to determine simulation parameters"
+activity3.2 <- "Create a database for simulation"
+activity3.3 <- "Perform simulation two answer three things: (1) obtain the mean and CI95  of output in order to measure the performance of model setting, (2) to validate the MSE formula and (3) assess the variation of cost (activity 4)"
+
+activity4.1 <- "Prepare cost and outcome that I want to calculate the ratio cost per one outcome unit"
+activity4.2 <- "Establish an assessment method for the cost/outcome ratio calculation"
+activity4.3 <- "Combine the performance and cost variation from the result of simulation in activity 3 to create a figure/table guiding the authorities to choose an AMR surveillance setting in considering both performance and budget constraints."
+
+progress1 <- "Literature review was done and having first draft with supervisors' comments. Evaluation of AMRSS in Viet Nam done first draft. All critical steps were also determined"
+progress2 <- "General formula of MSE was developped. The two others are in progress."
+progress3 <- "A baseline data including two periods are ready. Simulation procedure are not set up"
+progress4 <-  "Cost and outcome data were collected. All cost/outcome ratios were calculated. The simulation and combination of performance-cost are not yet done"
+
+briefresult1 <- "General formu"
+
+objective.col <- c(objective1,objective2,objective3,objective4)
+activity.col <- c(paste(activity1.1,activity1.2,activity1.3,sep = "|"),
+                  paste(activity2.1,activity2.2,activity2.3,sep = "|"),
+                  paste(activity3.1,activity3.2,activity3.3,sep = "|"),
+                  paste(activity4.1,activity4.2,activity4.3,sep = "|"))
+progress.col <- c(progress1,progress1,progress1,progress1)
+briefresult.col <- c(briefresult1,briefresult1,briefresult1,briefresult1)
+
+summary.table <- data.frame(Objective=objective.col,Activity=activity.col,Progress=progress.col,BriefResult=briefresult.col)
+
+kable(summary.table,caption = "Activities progress")
+
 ```
-$$
-a_b
-$$
+
+
+
+
+
+
+
+
