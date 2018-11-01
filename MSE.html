@@ -140,36 +140,76 @@ $(document).ready(function () {
 <p>Our aim is to find the best (in term of MSE) estimator <span class="math inline">\(\hat{p_c}\)</span> of <span class="math inline">\(p_c\)</span>.</p>
 <p>In absence of information on <span class="math inline">\(n_c\)</span>, <span class="math inline">\(n_h\)</span> and <span class="math inline">\(p_h\)</span>, the best estimator of <span class="math inline">\(p_c\)</span> we can get is</p>
 <p><span class="math display">\[
-\hat{p_c} = \frac{n_c p_c + n_h p_h}{n_c + n_h}
+\hat{p_c} = \frac{n_c p_c + n_h p_h}{n_c + n_h} \ \ \  (1)
 \]</span> By definition,</p>
 <p><span class="math display">\[
 \mbox{MSE}\left(\hat{p_c}\right) = \mbox{Var}\left(\hat{p_c}\right) + 
                                    \mbox{Bias}\left(\hat{p_c}\right)^2 =
                  \frac{\hat{p_c} \left(1 - \hat{p_c}\right)} {n_c + n_h} +
-                 \left(\hat{p_c} - p_c\right)^2
+                 \left(\hat{p_c} - p_c\right)^2\ \ \ (2)
 \]</span></p>
 <p>which gives</p>
 <p><span class="math display">\[
 \mbox{MSE}\left(\hat{p_c}\right) =
 \frac{(n_cp_c+n_hp_h)(n_cq_c+n_hq_h)}{(n_c+n_h)^3} +
-\left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2
+\left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2 \ \ \ (3)
 \]</span> with <span class="math inline">\(q_c = 1 - p_c\)</span> and <span class="math inline">\(q_h = 1 - p_h\)</span>.</p>
-<blockquote>
-<p>you have to validate this formula with simulations. Show a figure.</p>
-</blockquote>
-<p>Variance depends on value of <span class="math inline">\(n_c,\ n_h\)</span>, but bias depends on ratio <span class="math inline">\(\frac{n_c}{n_h}\)</span></p>
+<p><em>Simulation procedure</em></p>
+<p>For a fix value of sample size <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span>, I will create a figure two compare MSE obtained by formula and by simulation when <span class="math inline">\(p_c\)</span> and <span class="math inline">\(p_h\)</span> vary.</p>
+<ol style="list-style-type: decimal">
+<li><p>Set value for <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span>, <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span></p></li>
+<li><p>calculate <span class="math inline">\(MSE_f\)</span> using (3).</p></li>
+<li><p>For one simulation loop:</p>
+<ol style="list-style-type: decimal">
+<li><p>generate two random population using <span class="math inline">\(rbinom(n_c,1,p_c)\)</span> and <span class="math inline">\(rbinom(n_h,1,p_h)\)</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Calculate overall resistance proportion <span class="math inline">\(\left(\hat{p_c}\right)\)</span> after merging two populations</p></li>
+<li><p>Calculate square of difference bewteen overall resistance <span class="math inline">\(\hat{p_c}\)</span> and <span class="math inline">\(p_c\)</span> –&gt; call <span class="math inline">\(MSE_1\)</span></p></li>
+<li><p>Calculate <span class="math inline">\(MSE_2\)</span>, … <span class="math inline">\(MSE_{10000}\)</span></p></li>
+<li><p>Calculate <span class="math inline">\(MSE_{average} = \frac{\sum_{1 \leqslant i \leqslant 10000}(MSE)}{10000}\)</span> and compare with <span class="math inline">\(MSE_ obtained by formula_f\)</span></p></li>
+</ol></li>
+</ol></li>
+<li><p>Redo from step 1 to step 3 with other value of <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span></p></li>
+<li><p>Make a figure of <span class="math inline">\(p_c\)</span> on x axis, <span class="math inline">\(p_h\)</span> on y axis and two lines of <span class="math inline">\(MSE_{average}\)</span> and <span class="math inline">\(MSE_f\)</span></p></li>
+<li><p><span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span> are still constant. Should we choose only some values: 1000, 2000, 10000?</p></li>
+</ol>
+<p><em>End of simulation procedure</em></p>
+<p>Divise numerator and denominator of variance and bias by <span class="math inline">\(n_h\)</span></p>
+<p><span class="math display">\[
+variance = \frac{(\frac{n_c}{n_h}p_c+p_h)(\frac{n_c}{n_h}q_c+q_h)}{(n_c+n_h)(\frac{n_c}{n_h}+1)^2} \ \ \ (4)
+\]</span></p>
+<p><span class="math display">\[
+bias=\left(\frac{p_h-p_c}{\frac{n_c}{n_h}+1}\right)^2 \ \ \ (5)
+\]</span></p>
+<p><span class="math display">\[
+lim_{\frac{n_c}{n_h}\to\infty}(variance)=\frac{p_cp_h}{n_c+n_h} \ \ \ (6)
+\]</span></p>
+<p><span class="math display">\[
+lim_{\frac{n_c}{n_h}\to 0}(variance)=\frac{q_cq_h}{n_c+n_h} \ \ \ (7)
+\]</span></p>
+<p><span class="math display">\[
+lim_{\frac{n_c}{n_h}\to\infty}(bias) = 0 \ \ \ (8)
+\]</span></p>
+<p><span class="math display">\[
+lim_{\frac{n_c}{n_h}\to 0}(bias) = (p_h-p_c)^2 \ \ \ (9)
+\]</span></p>
+<p><span class="math inline">\(p_h\)</span> and <span class="math inline">\(p_c\)</span> are constant, so</p>
+<p>from (4), (6) and (7) we conclude variance depends on ratio <span class="math inline">\(\frac{n_c}{n_h}\)</span> and value of <span class="math inline">\(n_c,\ n_h\)</span></p>
+<p>from (5), (8) and (9) we see that bias depends on ratio <span class="math inline">\(\frac{n_c}{n_h}\)</span> and varies in range <span class="math inline">\([0, (p_h-p_c)^2]\)</span></p>
 <blockquote>
 <p>how do you know??? You have to prove it!</p>
 </blockquote>
 <p>In case of <span class="math inline">\(k\)</span> hospitals, each hospital is characterized by four parameters. We suppose the resistance prevalence among CAI (<span class="math inline">\(p_c\)</span>) remains constant in all hospitals. So the MSE will be represented by a set of parameters <span class="math inline">\((n_{c1},\dots,n_{ck},n_{h1},\dots,n_{hk},p_c,p_{h1},\dots,p_{hk},)\)</span></p>
 <p><span class="math display">\[
-\hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})}
-\]</span> And</p>
+\hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})} \ \ \ (10)
+\]</span></p>
+<p>And</p>
 <p><span class="math display">\[
-\mbox{MSE}\left(\hat{p_c}\right) = \frac{\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\left(1-\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\right)}{\sum_{}(n_{ci}+n_{hi})}+\left(\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}-p_c\right)^2
-\]</span> which gives</p>
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\left(1-\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\right)}{\sum_{}(n_{ci}+n_{hi})}+\left(\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}-p_c\right)^2  \ \ \ (11)
+\]</span></p>
+<p>which gives</p>
 <p><span class="math display">\[
-\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}n_{ci}+n_{hi})^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}n_{ci}+n_{hi})^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2  \ \ \ (12)
 \]</span></p>
 <blockquote>
 <p>You need to validate this with simulations with 2 hospitals and 3 hospitals.</p>
@@ -191,20 +231,21 @@ $(document).ready(function () {
 MSE=\frac{t_1(n_{c}p_c +n_{h}p_{h})t_1(n_{c}q_c +n_{h}q_{h})}
 {(t_1(n_{c}+n_{h}))^3} +
 \frac{(t_1(n_{h}(p_{h}-p_c)))^2}
-{(t_1(n_{c}+n_{h}))^2}
+{(t_1(n_{c}+n_{h}))^2}  \ \ \ (13)
 \]</span></p>
 <p><span class="math display">\[
 MSE=\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}
 {t_1(n_{c}+n_{h})^3} +
 \frac{n_{h}^2(p_{h}-p_c)^2}
-{(n_{c}+n_{h})^2}
+{(n_{c}+n_{h})^2}   \ \ \ (14)
 \]</span></p>
-<p><span class="math inline">\(p_h\)</span> and <span class="math inline">\(p_c\)</span> are fix (or constant?). Assign <span class="math inline">\(r=\frac{n_c}{n_h}\)</span> and <span class="math inline">\(n=n_c+n_h\)</span></p>
-<p>The variation of bias <span class="math inline">\((\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})\)</span> depends on <span class="math inline">\(\frac{n_{h}}{(n_{c}+n_{h})}\)</span> = <span class="math inline">\(\frac{1}{(r+1)}\)</span>. But <span class="math inline">\(r\)</span> is fix in one hospital (but we do not know). So the bias is constant.</p>
+<p><span class="math inline">\(p_h\)</span> and <span class="math inline">\(p_c\)</span> are constant. Assign <span class="math inline">\(r=\frac{n_c}{n_h}\)</span> and <span class="math inline">\(n=n_c+n_h\)</span></p>
+<p>The variation of bias <span class="math inline">\((\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})\)</span> depends on <span class="math inline">\(\frac{n_{h}}{(n_{c}+n_{h})}\)</span> = <span class="math inline">\(\frac{1}{(r+1)}\)</span>. <span class="math inline">\(r\)</span> is constant in one hospital (but we do not know the true value). So the bias is constant.</p>
 <p>The variation of variance <span class="math inline">\(\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}{t_1(n_{c}+n_{h})^3}\)</span> depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
 <p><span class="math display">\[
-Variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}
-\]</span> Thus, the variance depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
+variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}   \ \ \ (15)
+\]</span></p>
+<p>Thus, the variance depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
 <blockquote>
 <p>All these formulas need to be validated with simulations! Same comments for the next 2 sections</p>
 </blockquote>
@@ -216,7 +257,7 @@ Variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}
 MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
 {(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3} +
 \frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}   \ \ \ (16)
 \]</span></p>
 </div>
 <div id="three-types-of-hospital" class="section level3">
@@ -226,7 +267,7 @@ MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}
 MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2})+t_3(n_{c3}p_c +n_{h3}p_{h3}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))+t_3(n_{c3}q_c +n_{h3}q_{h3}))}
 {(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^3} +
 \frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c)+t_3n_{h3}(p_{h3}-p_c))^2}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^2}
+{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^2}   \ \ \ (17)
 \]</span></p>
 </div>
 <div id="compare-bias-variance-and-mse-between-three-cases" class="section level3">
@@ -236,12 +277,15 @@ MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2})+t_3(n_{c3}p
 <p>We compare first surveillance system (<span class="math inline">\(t_1+t_2\)</span> hospitals of type 1) and second system (<span class="math inline">\(t_1\)</span> hospitals of type 1 and <span class="math inline">\(t_2\)</span> hospitals of type 2)</p>
 <p>Bias comparison</p>
 <p><span class="math display">\[
-\Delta B=\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}-\frac{n_{h1}^2(p_{h1}-p_c)^2}{(n_{c1}+n_{h1})^2}
-\]</span> Variance comparison <span class="math display">\[
+\Delta B=\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}-
+\frac{n_{h1}^2(p_{h1}-p_c)^2}{(n_{c1}+n_{h1})^2}   \ \ \ (18)
+\]</span></p>
+<p>Variance comparison</p>
+<p><span class="math display">\[
 \Delta V=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
 {(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3}-
 \frac{(n_{c1}p_c +n_{h1}p_{h1})(n_{c1}q_c +n_{h1}q_{h1})}
-{(t_1+t_2)(n_{c1}+n_{h1})^3}
+{(t_1+t_2)(n_{c1}+n_{h1})^3}   \ \ \ (19)
 \]</span></p>
 <p>How <span class="math inline">\(\Delta B\)</span> and <span class="math inline">\(\Delta V\)</span> vary in function of <span class="math inline">\(t_1\)</span> and <span class="math inline">\(t_2\)</span>?</p>
 </div>
