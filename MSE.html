@@ -130,7 +130,9 @@ $(document).ready(function () {
 
 <div id="general-formula-of-mse" class="section level2">
 <h2>1. General formula of MSE</h2>
-<p>One hospital is characterized by four parameters <span class="math inline">\((n_c, n_h, p_c, p_h)\)</span> where</p>
+<div id="one-hospital" class="section level3">
+<h3>1.1. One hospital</h3>
+<p>It is characterized by four parameters <span class="math inline">\((n_c, n_h, p_c, p_h)\)</span> where</p>
 <ul>
 <li><span class="math inline">\(n_c\)</span> is the number community-acquired infection samples;</li>
 <li><span class="math inline">\(n_h\)</span> is the number of hospital-acquired infection samples;</li>
@@ -154,26 +156,6 @@ $(document).ready(function () {
 \frac{(n_cp_c+n_hp_h)(n_cq_c+n_hq_h)}{(n_c+n_h)^3} +
 \left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2 \ \ \ (3)
 \]</span> with <span class="math inline">\(q_c = 1 - p_c\)</span> and <span class="math inline">\(q_h = 1 - p_h\)</span>.</p>
-<p><em>Simulation procedure</em></p>
-<p>For a fix value of sample size <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span>, I will create a figure two compare MSE obtained by formula and by simulation when <span class="math inline">\(p_c\)</span> and <span class="math inline">\(p_h\)</span> vary.</p>
-<ol style="list-style-type: decimal">
-<li><p>Set value for <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span>, <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span></p></li>
-<li><p>calculate <span class="math inline">\(MSE_f\)</span> using (3).</p></li>
-<li><p>For one simulation loop:</p>
-<ol style="list-style-type: decimal">
-<li><p>generate two random population using <span class="math inline">\(rbinom(n_c,1,p_c)\)</span> and <span class="math inline">\(rbinom(n_h,1,p_h)\)</span></p>
-<ol start="2" style="list-style-type: decimal">
-<li><p>Calculate overall resistance proportion <span class="math inline">\(\left(\hat{p_c}\right)\)</span> after merging two populations</p></li>
-<li><p>Calculate square of difference bewteen overall resistance <span class="math inline">\(\hat{p_c}\)</span> and <span class="math inline">\(p_c\)</span> –&gt; call <span class="math inline">\(MSE_1\)</span></p></li>
-<li><p>Calculate <span class="math inline">\(MSE_2\)</span>, … <span class="math inline">\(MSE_{10000}\)</span></p></li>
-<li><p>Calculate <span class="math inline">\(MSE_{average} = \frac{\sum_{1 \leqslant i \leqslant 10000}(MSE)}{10000}\)</span> and compare with <span class="math inline">\(MSE_ obtained by formula_f\)</span></p></li>
-</ol></li>
-</ol></li>
-<li><p>Redo from step 1 to step 3 with other value of <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span></p></li>
-<li><p>Make a figure of <span class="math inline">\(p_c\)</span> on x axis, <span class="math inline">\(p_h\)</span> on y axis and two lines of <span class="math inline">\(MSE_{average}\)</span> and <span class="math inline">\(MSE_f\)</span></p></li>
-<li><p><span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span> are still constant. Should we choose only some values: 1000, 2000, 10000?</p></li>
-</ol>
-<p><em>End of simulation procedure</em></p>
 <p>Divise numerator and denominator of variance and bias by <span class="math inline">\(n_h\)</span></p>
 <p><span class="math display">\[
 variance = \frac{(\frac{n_c}{n_h}p_c+p_h)(\frac{n_c}{n_h}q_c+q_h)}{(n_c+n_h)(\frac{n_c}{n_h}+1)^2} \ \ \ (4)
@@ -196,10 +178,67 @@ lim_{\frac{n_c}{n_h}\to 0}(bias) = (p_h-p_c)^2 \ \ \ (9)
 <p><span class="math inline">\(p_h\)</span> and <span class="math inline">\(p_c\)</span> are constant, so</p>
 <p>from (4), (6) and (7) we conclude variance depends on ratio <span class="math inline">\(\frac{n_c}{n_h}\)</span> and value of <span class="math inline">\(n_c,\ n_h\)</span></p>
 <p>from (5), (8) and (9) we see that bias depends on ratio <span class="math inline">\(\frac{n_c}{n_h}\)</span> and varies in range <span class="math inline">\([0, (p_h-p_c)^2]\)</span></p>
-<blockquote>
-<p>how do you know??? You have to prove it!</p>
-</blockquote>
-<p>In case of <span class="math inline">\(k\)</span> hospitals, each hospital is characterized by four parameters. We suppose the resistance prevalence among CAI (<span class="math inline">\(p_c\)</span>) remains constant in all hospitals. So the MSE will be represented by a set of parameters <span class="math inline">\((n_{c1},\dots,n_{ck},n_{h1},\dots,n_{hk},p_c,p_{h1},\dots,p_{hk},)\)</span></p>
+<p><strong>Simulation procedure: validation MSE in case of one hospital</strong></p>
+<p>For a fix value of sample size <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span>, I will create a figure two compare MSE obtained by formula and by simulation when <span class="math inline">\(p_c\)</span> and <span class="math inline">\(p_h\)</span> vary.</p>
+<ol style="list-style-type: decimal">
+<li><p>Set value for <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span>, <span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span></p></li>
+<li><p>calculate <span class="math inline">\(MSE_f\)</span> using (3).</p></li>
+<li><p>For one simulation loop:</p>
+<ol style="list-style-type: decimal">
+<li><p>generate two random population using <span class="math inline">\(rbinom(n_c,1,p_c)\)</span> and <span class="math inline">\(rbinom(n_h,1,p_h)\)</span></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>Calculate overall resistance proportion <span class="math inline">\(\left(\hat{p_c}\right)\)</span> after merging two populations</p></li>
+<li><p>Calculate square of difference bewteen overall resistance <span class="math inline">\(\hat{p_c}\)</span> and <span class="math inline">\(p_c\)</span> –&gt; call <span class="math inline">\(MSE_1\)</span></p></li>
+<li><p>Calculate <span class="math inline">\(MSE_2\)</span>, … <span class="math inline">\(MSE_{10000}\)</span></p></li>
+<li><p>Calculate <span class="math inline">\(MSE_{average} = \frac{\sum_{1 \leqslant i \leqslant 10000}(MSE)}{10000}\)</span> and compare with <span class="math inline">\(MSE_ obtained by formula_f\)</span></p></li>
+</ol></li>
+</ol></li>
+<li><p>Redo from step 1 to step 3 with other value of <span class="math inline">\(p_c\)</span>, <span class="math inline">\(p_h\)</span></p></li>
+<li><p>Make a figure of <span class="math inline">\(p_c\)</span> on x axis, <span class="math inline">\(p_h\)</span> on y axis and two lines of <span class="math inline">\(MSE_{average}\)</span> and <span class="math inline">\(MSE_f\)</span></p></li>
+<li><p><span class="math inline">\(n_c\)</span> and <span class="math inline">\(n_h\)</span> are still constant. Should we choose only some values: 1000, 2000, 10000?</p></li>
+</ol>
+<p><em>End of simulation procedure</em></p>
+<p>Verification in case of 1 hospital: I test with multiple values of prevalence in CAI and in HAI</p>
+<pre><code>##    prevalence_cai prevalence_hai  MSE_formula    MSE_simul      MSEdiff
+## 1             0.2            0.6 0.0027717781 0.0027343750 3.740312e-05
+## 2             0.2            0.7 0.0041310453 0.0041482422 1.719688e-05
+## 3             0.2            0.8 0.0057710891 0.0058742188 1.031297e-04
+## 4             0.2            0.9 0.0077952422 0.0079123047 1.170625e-04
+## 5             0.3            0.6 0.0016553062 0.0016857422 3.043594e-05
+## 6             0.3            0.7 0.0027108469 0.0027843750 7.352813e-05
+## 7             0.3            0.8 0.0041085219 0.0041951172 8.659531e-05
+## 8             0.3            0.9 0.0058498297 0.0059179687 6.813906e-05
+## 9             0.4            0.6 0.0009124984 0.0009304687 1.797031e-05
+## 10            0.4            0.7 0.0017227344 0.0017138672 8.867187e-06
+## 11            0.4            0.8 0.0028471016 0.0028093750 3.772656e-05
+## 12            0.4            0.9 0.0042450719 0.0042169922 2.807969e-05
+## 13            0.5            0.6 0.0004720063 0.0004685547 3.451563e-06
+## 14            0.5            0.7 0.0009592922 0.0009367187 2.257344e-05
+## 15            0.5            0.8 0.0016228594 0.0017169922 9.413281e-05
+## 16            0.5            0.9 0.0028185688 0.0028093750 9.193750e-06
+##    MSE_diff_percent
+## 1               1.4
+## 2               0.4
+## 3               1.8
+## 4               1.5
+## 5               1.8
+## 6               2.6
+## 7               2.1
+## 8               1.2
+## 9               1.9
+## 10              0.5
+## 11              1.3
+## 12              0.7
+## 13              0.7
+## 14              2.4
+## 15              5.5
+## 16              0.3</code></pre>
+</div>
+<div id="in-case-of-k-hospitals" class="section level3">
+<h3>1.2. In case of <span class="math inline">\(k\)</span> hospitals</h3>
+<p>Each hospital is characterized by four parameters.</p>
+<p>We suppose the resistance prevalence among CAI (<span class="math inline">\(p_c\)</span>) remains constant in all hospitals.</p>
+<p>So the MSE will be represented by a set of parameters <span class="math inline">\((n_{c1},\dots,n_{ck},n_{h1},\dots,n_{hk},p_c,p_{h1},\dots,p_{hk},)\)</span></p>
 <p><span class="math display">\[
 \hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})} \ \ \ (10)
 \]</span></p>
@@ -209,11 +248,19 @@ lim_{\frac{n_c}{n_h}\to 0}(bias) = (p_h-p_c)^2 \ \ \ (9)
 \]</span></p>
 <p>which gives</p>
 <p><span class="math display">\[
-\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}n_{ci}+n_{hi})^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2  \ \ \ (12)
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}(n_{ci}+n_{hi}))^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2  \ \ \ (12)
 \]</span></p>
-<blockquote>
-<p>You need to validate this with simulations with 2 hospitals and 3 hospitals.</p>
-</blockquote>
+<p><strong>Validation in case of 2 hospitals</strong></p>
+<p>Validation result using parameter set <span class="math inline">\((p_c,p_h,n_c,n_h)\)</span> of two hospitals: (0.3, 0.5, 700, 100) and (0.3, 0.7, 1000, 500)</p>
+<p>Using formula (12), estimated p = 0.3956522 ; MSE = 0.0092533</p>
+<p>Using simulation with 1000 loops, p = 0.386087; MSE = 0.0092346</p>
+<p>MSE difference = 0, that corresponds 0.2 percent of MSE obtained by formula.</p>
+<p><strong>Validation in case of 3 hospitals</strong></p>
+<p>Validation result using parameter set <span class="math inline">\((p_c,p_h,n_c,n_h)\)</span> of three hospitals: (0.3, 0.5, 700, 100), (0.3, 0.7, 1000, 500) and (0.3, 0.8, 600, 100)</p>
+<p>Using formula (12), estimated p = 0.39 ; MSE = 0.0081793</p>
+<p>Using simulation with 1000 loops, p = 0.3803333; MSE = 0.0082269</p>
+<p>MSE difference = 0, that corresponds 0.6 percent of MSE obtained by formula.</p>
+</div>
 </div>
 <div id="variation-of-mse" class="section level2">
 <h2>2. Variation of MSE</h2>
@@ -240,15 +287,17 @@ MSE=\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}
 {(n_{c}+n_{h})^2}   \ \ \ (14)
 \]</span></p>
 <p><span class="math inline">\(p_h\)</span> and <span class="math inline">\(p_c\)</span> are constant. Assign <span class="math inline">\(r=\frac{n_c}{n_h}\)</span> and <span class="math inline">\(n=n_c+n_h\)</span></p>
-<p>The variation of bias <span class="math inline">\((\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})\)</span> depends on <span class="math inline">\(\frac{n_{h}}{(n_{c}+n_{h})}\)</span> = <span class="math inline">\(\frac{1}{(r+1)}\)</span>. <span class="math inline">\(r\)</span> is constant in one hospital (but we do not know the true value). So the bias is constant.</p>
-<p>The variation of variance <span class="math inline">\(\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}{t_1(n_{c}+n_{h})^3}\)</span> depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
+<p>The bias <span class="math inline">\((\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})\)</span> depends on <span class="math inline">\(\frac{n_{h}}{(n_{c}+n_{h})}\)</span> = <span class="math inline">\(\frac{1}{(r+1)}\)</span>. <span class="math inline">\(r\)</span> is constant in one hospital (but we do not know the true value). So the bias is constant.</p>
+<p>The variance <span class="math inline">\(\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}{t_1(n_{c}+n_{h})^3}\)</span> depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
 <p><span class="math display">\[
 variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}   \ \ \ (15)
 \]</span></p>
 <p>Thus, the variance depends on number of hospital <span class="math inline">\(t_1\)</span> and sample size in one hospital <span class="math inline">\(n\)</span>.</p>
-<blockquote>
-<p>All these formulas need to be validated with simulations! Same comments for the next 2 sections</p>
-</blockquote>
+<p><strong>Validation in case of <span class="math inline">\(t_1\)</span> hospitals of same type</strong></p>
+<p>Validation result using parameter set <span class="math inline">\((p_c,p_h,n_c,n_h)\)</span> of t1 hospitals: (0.3, 0.5, 700, 100)</p>
+<p>Using formula (14), estimated p = 0.325 ; MSE = 6.524218810^{-4}</p>
+<p>Using simulation with 1000 loops, p = 0.32175; MSE = 6.585200610^{-4}</p>
+<p>MSE difference = 0, that corresponds 0.9 percent of MSE obtained by formula.</p>
 </div>
 <div id="two-types-of-hospital" class="section level3">
 <h3>2.2. Two types of hospital</h3>
@@ -259,6 +308,11 @@ MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}
 \frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}
 {(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}   \ \ \ (16)
 \]</span></p>
+<p><strong>Validation in case of <span class="math inline">\(t_1\)</span> hospitals of type 1 and <span class="math inline">\(t_2\)</span> hospitals of type 2</strong></p>
+<p>Validation result using parameter set <span class="math inline">\((p_c,p_h,n_c,n_h)\)</span> of t1 hospitals of type 1 (0.3, 0.5, 700, 100) and t2 hospitals of type 2 (0.3, 0.6, 800, 100)</p>
+<p>Using formula (14), estimated p = 0.3268293 ; MSE = 7.466403610^{-4}</p>
+<p>Using simulation with 1000 loops, p = 0.3403659; MSE = 7.66040510^{-4}</p>
+<p>MSE difference = 0, that corresponds 2.6 percent of MSE obtained by formula.</p>
 </div>
 <div id="three-types-of-hospital" class="section level3">
 <h3>2.3. Three types of hospital</h3>
@@ -269,6 +323,11 @@ MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2})+t_3(n_{c3}p
 \frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c)+t_3n_{h3}(p_{h3}-p_c))^2}
 {(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^2}   \ \ \ (17)
 \]</span></p>
+<p><strong>Validation in case of <span class="math inline">\(t_1\)</span> hospitals of type 1, <span class="math inline">\(t_2\)</span> hospitals of type 2 and <span class="math inline">\(t_3\)</span> hospitals of type 3</strong></p>
+<p>Validation result using parameter set <span class="math inline">\((p_c,p_h,n_c,n_h)\)</span> of t1 hospitals of type 1 (0.3, 0.5, 700, 100), t2 hospitals of type 2 (0.3, 0.6, 800, 100) and t3 hospitals of type 3 (0.3, 0.4, 600, 200)</p>
+<p>Using formula (14), estimated p = 0.304918 ; MSE = 7.118044410^{-4}</p>
+<p>Using simulation with 1000 loops, p = 0.3188596; MSE = 7.080503310^{-4}</p>
+<p>MSE difference = 0, that corresponds 0.5 percent of MSE obtained by formula.</p>
 </div>
 <div id="compare-bias-variance-and-mse-between-three-cases" class="section level3">
 <h3>2.4. Compare bias, variance and MSE between three cases</h3>
