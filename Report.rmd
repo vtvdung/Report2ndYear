@@ -77,7 +77,16 @@ Calculate cost, then calculate cost/performance ratio.
 
 ## 2.2. Training
 
-## 2.3. Paper
++ For PhD
+
++ Soft skills
+
++ Mandatory
+
+
+## 2.3. Publications
++ Result of VINARES project: In submitting to JGAR
++ 
 
 # 3. Result
 ### 3.1. Activity 1
@@ -97,7 +106,7 @@ Summary table
 library(knitr)
 
 objective1 <- "Determine critical steps affecting the performance of AMRSS in Vietnam"
-objective2 <- "Develop and model a pilot AMR surveillance protocol"
+objective2 <- "Develop and model a pilot AMR surveillance protocol" # NEED more explication in ppt
 objective3 <- "Evaluate model’s performance and determine performance threshold of pilot AMR surveillance protocol when factors change"
 objective4 <- "Optimize the variation of cost-performance ratio of AMRSS"
 
@@ -122,7 +131,10 @@ progress2 <- "General formula of MSE was developped. The two others are in progr
 progress3 <- "A baseline data including two periods are ready. Simulation procedure are not set up"
 progress4 <-  "Cost and outcome data were collected. All cost/outcome ratios were calculated. The simulation and combination of performance-cost are not yet done"
 
-briefresult1 <- "General formu"
+briefresult1 <- "AMR surveillance system over the world"
+bfiefresult2 <- "MSE formula"
+briefresult3 <- "Not yet"
+briefresult4 <- "Cost/one outcome unit"
 
 objective.col <- c(objective1,objective2,objective3,objective4)
 activity.col <- c(paste(activity1.1,activity1.2,activity1.3,sep = "|"),

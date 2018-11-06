@@ -1,0 +1,323 @@
+---
+title: "MSE simulation procedure"
+author: "Dung Vu Tien Viet"
+date: "3 novembre 2018"
+output: html_document
+---
+```{r}
+library(rmarkdown)
+library(knitr)
+```
+> MSE for k hospital formula
+
+```{r}
+
+#hosp.param.example <- list(c(0.2,1000,100),c(0.3,1000,200),c(0.3,500,100),c(0.4,2000,100))
+#prev.c.example <- 0.1
+MSE.formula <- function(prev.c,hosp.param.list){ # function calculate Variance, squared bias and MSE
+  # hosp.param.list is a list, each element is a vector of three parameters: p.h, n.c,n.h
+  a <- c()
+  b <- c()
+  for (i in 1:length(hosp.param.list)){
+    hosp <- hosp.param.list[[i]]
+    a[i] <- hosp[2]*prev.c+hosp[3]*hosp[1] # a = n_c * p_c + n_h * p_h
+    b[i] <- hosp[2]*(1-prev.c)+hosp[3]*(1-hosp[1]) # b = n_c * q_c + n_h * q_h
+  }
+  var.f <- sum(a)*sum(b)/((sum(a+b))^3)
+  bias.sqr.f <- (sum(a*(1-prev.c)-b*prev.c))^2 / ((sum(a+b))^2)
+  return(list(prev.c.f=sum(a)/sum(a+b),Variance=var.f,Bias.sqr=bias.sqr.f,MSE=var.f+bias.sqr.f))
+}
+
+MSE.formula.3type.hosp <- function(prev.c,hosp.param.list,hosp.type.num){ # function calculate Variance, squared bias and MSE
+  # hosp.param.list is a list, each element is a vector of three parameters: p.h, n.c,n.h
+  # hosp.type.num is a vector which contains number of hospital per type 1, 2 and 3
+  
+  a1 <- 0; a2 <- 0; a3 <- 0
+  b1 <- 0; b2 <- 0; b3 <- 0
+  t1 <- hosp.type.num[1];t2 <- hosp.type.num[2];t3 <- hosp.type.num[3]
+  q.c <- 1-prev.c
+  if (t1>0){
+    hosp <- hosp.param.list[[1]]
+    a1 <- hosp[2]*prev.c+hosp[3]*hosp[1] # a = n_c * p_c + n_h * p_h
+    b1 <- hosp[2]*q.c+hosp[3]*(1-hosp[1]) # b = n_c * q_c + n_h * q_h
+  }
+  if (t2>0){
+    hosp <- hosp.param.list[[2]]
+    a2 <- hosp[2]*prev.c+hosp[3]*hosp[1] # a = n_c * p_c + n_h * p_h
+    b2 <- hosp[2]*q.c+hosp[3]*(1-hosp[1]) # b = n_c * q_c + n_h * q_h
+  }
+  if (t3>0){
+    hosp <- hosp.param.list[[3]]
+    a3 <- hosp[2]*prev.c+hosp[3]*hosp[1] # a = n_c * p_c + n_h * p_h
+    b3 <- hosp[2]*q.c+hosp[3]*(1-hosp[1]) # b = n_c * q_c + n_h * q_h
+  }
+  var.f <- (t1*a1+t2*a2+t2*a3)*(t1*b1+t2*b2+t3*b3)/((t1*(a1+b1)+t2*(a2+b2)+t3*(a3+b3))^3)
+  bias.sqr.f <- (t1*(a1*q.c-b1*prev.c)+t2*(a2*q.c-b2*prev.c)+t3*(a3*q.c-b3*prev.c))^2 /((t1*(a1+b1)+t2*(a2+b2)+t3*(a3+b3))^2)
+  
+  prev_c_f <- (a1+a2+a3)/(a1+a2+a3+b1+b2+b3)
+  
+  return(list(prev.c.f=prev_c_f,Variance=var.f,Bias.sqr=bias.sqr.f,MSE=var.f+bias.sqr.f))
+}
+
+MSE.compare.two.systems <- function(prev.c,hosp1.param.list,hosp1.type.num,hosp2.param.list,hosp2.type.num){
+  sys1.result <- MSE.formula.3type.hosp(prev.c,hosp1.param.list,hosp1.type.num)
+  sys2.result <- MSE.formula.3type.hosp(prev.c,hosp2.param.list,hosp2.type.num)
+  
+    return(list(deltaPrevalence=sys2.result[[1]]/sys1.result[[1]],
+                deltaVar=sys2.result[[2]]/sys1.result[[2]],deltaBias=sys2.result[[3]]/sys1.result[[3]],
+                deltaMSE=sys2.result[[4]]/sys1.result[[4]]))
+
+  #  return(list(prev.c.f=prev_c_f,Variance=var.f,Bias.sqr=bias.sqr.f,MSE=var.f+bias.sqr.f))
+
+}
+```
+```{r}
+simulation.k.hosp <- function(prev.c,hosp.param.list,num.loop=5000){
+  # hosp.param.list is a list, each element is a vector of three parameters: p.h, n.c,n.h
+  
+  phat <- c()
+  SE <- c()
+  for (i in 1:num.loop){
+    pop <- c()
+    for (j in 1:length(hosp.param.list)){
+    hosp <- hosp.param.list[[j]]
+    pop <- c(pop,rbinom(hosp[2],1,prev.c),rbinom(hosp[3],1,hosp[1])) # add CAI and HAI of current hospital to population
+    }
+    p_hat <-mean(pop) # overall prevalence
+    phat[i] <- p_hat
+    SE[i] <- (p_hat-prev.c)^2
+  }# end loop
+  p_s <- mean(phat)
+  var_s <- mean((phat-p_s)^2)
+  bias_s=(p_s-prev.c)^2
+  MSE_s <- mean(SE)
+  
+  return(list(prev.c.s=p_s,var.s=var_s,bias.sqr.s=bias_s,MSE.s=MSE_s))
+}
+
+
+```
+```{r echo=FALSE}
+#####
+#calculate MSE for k hospitals: run simulation for different parameter sets
+
+summary.simulation.k.hosp <- data.frame(num.hosp=0,true.p.c=0,p.hai="0",param="",byFunction=0,bySimulation=0,percent.different=0,stringsAsFactors = F)
+
+for (hosp.num in 1:10){ # test from 1 to 20 hospitals
+  for (p.c in seq(0.1,0.3,by=0.1)){ #  test prevalence in CAI from 0.1 to 0.6
+    hosp.param.value <- list()
+    p.h <- c()
+    for (j in 1:hosp.num){
+      hosp.param.value[[j]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+      p.h[j] <- hosp.param.value[[j]][1]
+    }
+  summ.p.h <- paste(min(p.h),max(p.h),sep = ":")
+  
+  result.f <- MSE.formula(prev.c=p.c,hosp.param.list = hosp.param.value)
+  result.s <- simulation.k.hosp(prev.c=p.c,hosp.param.list = hosp.param.value)
+
+  summary.simulation.k.hosp <- rbind(summary.simulation.k.hosp,
+        c(hosp.num,p.c,summ.p.h,"Estimated prevalence",     result.f[[1]],result.s[[1]],round(100*(result.f[[1]]-result.s[[1]])/result.f[[1]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"Variance", result.f[[2]],result.s[[2]],round(100*(result.f[[2]]-result.s[[2]])/result.f[[2]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"Squared bias", result.f[[3]],result.s[[3]],round(100*(result.f[[3]]-result.s[[3]])/result.f[[3]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"MSE", 
+    result.f[[4]],result.s[[4]],round(100*(result.f[[4]]-result.s[[4]])/result.f[[4]],digits = 1)))
+  
+  }
+  
+    
+}
+#####
+### Calculate MSE for one, two and three types of hospital: simulation 
+summary.simulation.3.type.hosp <- data.frame(num.hosp="",true.p.c=0,p.hai="0",param="",byFunction=0,bySimulation=0,percent.different=0,stringsAsFactors = F)
+
+for (hosp1 in 2:3){ # type 1 from 2 to 4 hosp
+  for (hosp2 in 0:2){ # type 2 from 0 to 3 hosp
+   for (hosp3 in 0:1) { # type 3 from 0 to 2 hosp
+      for (p.c in seq(0.1,0.3,by=0.1)){ #  test prevalence in CAI from 0.1 to 0.6
+    hosp.param.value <- list()
+      hosp.param.value[[1]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+
+    #
+
+      hosp.param.value[[2]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+
+    #
+      hosp.param.value[[3]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+
+    #
+    hosp.num <- paste(hosp1,hosp2,hosp3,sep = ":")
+  p.h <- unlist(hosp.param.value)[seq(1,length(hosp.param.value)*3,3)]
+  
+  hosp.param.for.simulation <- list()
+  for (i in 1:hosp1) {hosp.param.for.simulation[[i]] <- hosp.param.value[[1]]}
+  if (hosp2>0) for (i in 1:hosp2) {hosp.param.for.simulation[[hosp1+i]] <- hosp.param.value[[2]]}
+  if (hosp3>0) for (i in 1:hosp3) {hosp.param.for.simulation[[hosp1+hosp2+i]] <- hosp.param.value[[3]]}
+  
+  summ.p.h <- paste(min(p.h),max(p.h),sep = ":")
+  
+  
+  result.f <- MSE.formula.3type.hosp(prev.c=p.c,hosp.param.list = hosp.param.value,hosp.type.num = c(hosp1,hosp2,hosp3))
+  
+  result.s <- simulation.k.hosp(prev.c=p.c,hosp.param.list = hosp.param.for.simulation)
+
+  summary.simulation.3.type.hosp <- rbind(summary.simulation.3.type.hosp,
+        c(hosp.num,p.c,summ.p.h,"Estimated prevalence",     result.f[[1]],result.s[[1]],round(100*(result.f[[1]]-result.s[[1]])/result.f[[1]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"Variance", result.f[[2]],result.s[[2]],round(100*(result.f[[2]]-result.s[[2]])/result.f[[2]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"Squared bias", result.f[[3]],result.s[[3]],round(100*(result.f[[3]]-result.s[[3]])/result.f[[3]],digits = 1)), 
+        c(hosp.num,p.c,summ.p.h,"MSE", 
+    result.f[[4]],result.s[[4]],round(100*(result.f[[4]]-result.s[[4]])/result.f[[4]],digits = 1)))
+  
+  }
+     
+   }
+  }
+}
+
+#####
+#Compare MSE two systems
+### Calculate MSE for one, two and three types of hospital: simulation 
+summary.simulation.two.systems <- data.frame(num.hosp1="",num.hosp2="",true.p.c=0,p.hai1="0",p.hai2="0",param="",byFunction=0,bySimulation=0,percent.different=0,stringsAsFactors = F)
+
+for (hosp1 in 2:3){ # type 1 from 2 to 4 hosp
+  for (hosp2 in 0:2){ # type 2 from 0 to 3 hosp
+   for (hosp3 in 0:1) { # type 3 from 0 to 2 hosp
+    for (hosp4 in 3:4){
+      for (hosp5 in 0:3){
+        for (hosp6 in 0:2){
+            for (p.c in seq(0.1,0.3,by=0.1)){ #  test prevalence in CAI from 0.1 to 0.6
+        
+        # sys1
+    hosp1.param.value <- list()
+    hosp2.param.value <- list()
+
+    for (i in 1:3){
+           hosp1.param.value[[i]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+           
+          hosp2.param.value[[i]] <- c(sample(seq(0.4,0.9,by=0.1),size = 1),
+                               sample(seq(1000,2000,by=100),size = 1),
+                               sample(seq(100,400,by=100),size = 1))
+    }
+      
+
+    #
+    hosp1.num <- paste(hosp1,hosp2,hosp3,sep = ":")
+    
+    
+    hosp2.num <- paste(hosp4,hosp5,hosp6,sep = ":")
+
+    #
+    
+    
+  p.h1 <- unlist(hosp1.param.value)[seq(1,length(hosp1.param.value)*3,3)]
+  p.h2 <- unlist(hosp2.param.value)[seq(1,length(hosp2.param.value)*3,3)]
+  summ.p.h1 <- paste(min(p.h1),max(p.h1),sep = ":")
+  summ.p.h2 <- paste(min(p.h2),max(p.h2),sep = ":")
+
+  
+  hosp1.param.for.simulation <- list()
+  for (i in 1:hosp1) {hosp1.param.for.simulation[[i]] <- hosp1.param.value[[1]]}
+  if (hosp2>0) for (i in 1:hosp2) {hosp1.param.for.simulation[[length(hosp1.param.for.simulation)+1]] <- hosp1.param.value[[2]]}
+  if (hosp3>0) for (i in 1:hosp3) {hosp1.param.for.simulation[[length(hosp1.param.for.simulation)+1]] <- hosp1.param.value[[3]]}
+  
+  hosp2.param.for.simulation <- list()
+  for (i in 1:hosp4) {hosp2.param.for.simulation[[length(hosp2.param.for.simulation)+1]] <- hosp2.param.value[[1]]}
+  if (hosp5>0) for (i in 1:hosp5) {hosp2.param.for.simulation[[length(hosp2.param.for.simulation)+1]] <- hosp2.param.value[[2]]}
+  if (hosp6>0) for (i in 1:hosp6) {hosp2.param.for.simulation[[length(hosp2.param.for.simulation)+1]] <- hosp2.param.value[[3]]}
+  
+  result.f <- MSE.compare.two.systems(prev.c = p.c,hosp1.param.list = hosp1.param.value,hosp1.type.num = c(hosp1,hosp2,hosp3),hosp2.param.list = hosp2.param.value,hosp2.type.num = c(hosp4,hosp5,hosp6))
+  
+
+  result.s1 <- simulation.k.hosp(prev.c=p.c,hosp.param.list = hosp1.param.for.simulation)
+  result.s2 <- simulation.k.hosp(prev.c=p.c,hosp.param.list = hosp2.param.for.simulation)
+  delta_prev <- result.s2[[1]]/result.s1[[1]]
+  delta_variance <- result.s2[[2]]/result.s1[[2]]
+  delta_bias <- result.s2[[3]]/result.s1[[3]]
+  delta_MSE <- result.s2[[4]]/result.s1[[4]]
+  
+  #summary.simulation.two.systems <- data.frame(num.hosp1="",num.hosp2="",true.p.c=0,p.hai1="0",p.hai2="0",param="",byFunction=0,bySimulation=0,percent.different=0,stringsAsFactors = F)
+
+  summary.simulation.two.systems <- rbind(summary.simulation.two.systems,
+        c(paste(hosp1,hosp2,hosp3,sep = ":"),paste(hosp4,hosp5,hosp6,sep = ":"), p.c,summ.p.h1,summ.p.h2,"Estimated prevalence",     result.f[[1]],delta_prev,round(100*(result.f[[1]]-delta_prev)/result.f[[1]],digits = 1)),
+        
+        c(paste(hosp1,hosp2,hosp3,sep = ":"),paste(hosp4,hosp5,hosp6,sep = ":"), p.c,summ.p.h1,summ.p.h2,"Variance", result.f[[2]],delta_variance,round(100*(result.f[[2]]-delta_variance)/result.f[[2]],digits = 1)), 
+        
+        c(paste(hosp1,hosp2,hosp3,sep = ":"),paste(hosp4,hosp5,hosp6,sep = ":"), p.c,summ.p.h1,summ.p.h2,"Squared bias", result.f[[3]],delta_bias,round(100*(result.f[[3]]-delta_bias)/result.f[[3]],digits = 1)), 
+        
+        c(paste(hosp1,hosp2,hosp3,sep = ":"),paste(hosp4,hosp5,hosp6,sep = ":"), p.c,summ.p.h1,summ.p.h2,"MSE", 
+    result.f[[4]],delta_MSE,round(100*(result.f[[4]]-delta_MSE)/result.f[[4]],digits = 1)))
+  
+  }
+          
+          
+          
+        }
+      }
+    } 
+     
+     
+    
+     
+   }
+  }
+}
+
+summary.simulation.two.systems <- summary.simulation.two.systems[-1,]
+
+
+
+
+```
+
+```{r echo=FALSE}
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+
+
+#####
+# 3 types of hospital
+summary.simulation.k.hosp %>% filter(param=="MSE") %>% select(param,percent.different) -> plot.data
+plot.data$percent.different <- as.numeric(plot.data$percent.different)
+ggplot(data = plot.data, aes(x=param,y=percent.different))+
+  geom_boxplot()+xlab("")+ylab("percent of different")
+quantile(plot.data$percent.different)
+
+# 3 types of hospital
+summary.simulation.3.type.hosp %>% filter(param=="MSE") %>% select(param,percent.different) -> plot.data
+plot.data$percent.different <- as.numeric(plot.data$percent.different)
+ggplot(data = plot.data, aes(x=param,y=percent.different))+
+  geom_boxplot()+xlab("")+ylab("percent of different")
+
+
+##### 
+# two systems
+
+summary.simulation.two.systems %>% filter(param=="MSE") %>% select(byFunction,bySimulation) %>%
+melt(measure.vars = c("byFunction","bySimulation")) -> plot.data
+plot.data$value <- as.numeric(plot.data$value)
+plot.data$variable <- as.character(plot.data$variable)
+plot.data$x <- rep(1:(nrow(plot.data)/2),2)
+
+View(t(rbind(unlist(by(plot.data[plot.data$value<10,"value"],plot.data[plot.data$value<10,"variable"],summary)[1]), unlist(by(plot.data[plot.data$value<10,"value"],plot.data[plot.data$value<10,"variable"],summary)[2]))))
+
+by(plot.data[plot.data$value<10,"value"],plot.data[plot.data$value<10,"variable"],quantile)
+
+ggplot(data=plot.data[plot.data$value<10,], aes(x=variable, y=value)) +
+  geom_boxplot()+xlab("Method")+ylab("MSE2 / MSE1")
+
+ggplot(data=plot.data[plot.data$value<2 & plot.data$x < 30,], aes(x=x, y=value,group=variable,fill=variable)) +
+  geom_line(aes(linetype=variable))+
+  geom_point(aes(shape=variable))
+```
+

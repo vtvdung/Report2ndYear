@@ -2,7 +2,9 @@
 title: "MSE"
 author: "Dung Vu Tien Viet"
 date: "31 octobre 2018"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ## 1. General formula of MSE
@@ -22,7 +24,7 @@ In absence of information on $n_c$, $n_h$ and $p_h$, the best estimator
 of $p_c$ we can get is
 
 $$
-\hat{p_c} = \frac{n_c p_c + n_h p_h}{n_c + n_h} \ \ \  (1)
+\hat{p_c} = \frac{n_c p_c + n_h p_h}{n_c + n_h}
 $$
 By definition,
 
@@ -30,7 +32,7 @@ $$
 \mbox{MSE}\left(\hat{p_c}\right) = \mbox{Var}\left(\hat{p_c}\right) + 
                                    \mbox{Bias}\left(\hat{p_c}\right)^2 =
                  \frac{\hat{p_c} \left(1 - \hat{p_c}\right)} {n_c + n_h} +
-                 \left(\hat{p_c} - p_c\right)^2\ \ \ (2)
+                 \left(\hat{p_c} - p_c\right)^2
 $$
 
 which gives
@@ -38,7 +40,7 @@ which gives
 $$
 \mbox{MSE}\left(\hat{p_c}\right) =
 \frac{(n_cp_c+n_hp_h)(n_cq_c+n_hq_h)}{(n_c+n_h)^3} +
-\left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2 \ \ \ (3)
+\left(\frac{n_hp_h-n_hp_c}{n_c+n_h}\right)^2
 $$
 with $q_c = 1 - p_c$ and $q_h = 1 - p_h$.
 
@@ -47,30 +49,30 @@ Divise numerator and denominator of variance and bias by $n_h$
 
 
 $$
-variance = \frac{(\frac{n_c}{n_h}p_c+p_h)(\frac{n_c}{n_h}q_c+q_h)}{(n_c+n_h)(\frac{n_c}{n_h}+1)^2} \ \ \ (4)
+variance = \frac{(\frac{n_c}{n_h}p_c+p_h)(\frac{n_c}{n_h}q_c+q_h)}{(n_c+n_h)(\frac{n_c}{n_h}+1)^2}
 $$
 
 
 $$
-bias=\left(\frac{p_h-p_c}{\frac{n_c}{n_h}+1}\right)^2 \ \ \ (5)
+bias=\left(\frac{p_h-p_c}{\frac{n_c}{n_h}+1}\right)^2
 $$
 
 
 $$
-lim_{\frac{n_c}{n_h}\to\infty}(variance)=\frac{p_cp_h}{n_c+n_h} \ \ \ (6)
+lim_{\frac{n_c}{n_h}\to\infty}(variance)=\frac{p_cp_h}{n_c+n_h}
 $$
 
 $$
-lim_{\frac{n_c}{n_h}\to 0}(variance)=\frac{q_cq_h}{n_c+n_h} \ \ \ (7)
+lim_{\frac{n_c}{n_h}\to 0}(variance)=\frac{q_cq_h}{n_c+n_h}
 $$
 
 
 $$
-lim_{\frac{n_c}{n_h}\to\infty}(bias) = 0 \ \ \ (8)
+lim_{\frac{n_c}{n_h}\to\infty}(bias) = 0
 $$
 
 $$
-lim_{\frac{n_c}{n_h}\to 0}(bias) = (p_h-p_c)^2 \ \ \ (9)
+lim_{\frac{n_c}{n_h}\to 0}(bias) = (p_h-p_c)^2
 $$
 
 $p_h$ and $p_c$ are constant, so
@@ -98,7 +100,7 @@ For a fix value of sample size $n_c$ and $n_h$, I will create a figure two compa
 		
 		4. Calculate $MSE_2$, ... $MSE_{10000}$
 		
-		5. Calculate $MSE_{average} = \frac{\sum_{1 \leqslant i  \leqslant 10000}(MSE)}{10000}$ and compare with $MSE_ obtained by formula_f$
+		5. Calculate $MSE_{average} = \frac{\sum_{1 \leqslant i  \leqslant 10000}(MSE)}{10000}$ and compare with $MSE obtained by formula$
 
 4. Redo from step 1 to step 3 with other value of $p_c$, $p_h$
 
@@ -109,51 +111,6 @@ For a fix value of sample size $n_c$ and $n_h$, I will create a figure two compa
 *End of simulation procedure*
 
 
-Verification in case of 1 hospital: I test with multiple values of prevalence in CAI and in HAI
-
-```{r echo=FALSE}
-
-# Simulation MSE for one hospital
-# set params
-prevalence_c <- seq(0.20,0.50,by=0.1)
-prevalence_h <- seq(0.60,0.90,by=0.1)
-n_c <- 700
-n_h <- 100
-MSE_f <- c()
-MSE_s <- c()
-prev_c <-c()
-prev_h <- c()
-
-counter <- 0
-for (v1 in prevalence_c){
-  for (v2 in prevalence_h){
-    counter <- counter+1
-    
-    p_c <- v1
-    q_c <- 1-p_c
-    p_h <- v2
-    q_h <- 1-p_h
-    
-    prev_c[counter] <- p_c    
-    prev_h[counter] <- p_h
-    MSE_f[counter] <- (n_c*p_c+n_h*p_h)*(n_c*q_c+n_h*q_h)/((n_c+n_h)^3) + (n_h*(p_h-p_c)/(n_c+n_h))^2
-    
-    #pop_c <- rbinom(n_c,1,p_c)
-    #pop_h <- rbinom(n_h,1,p_h)
-    #pop <- c(pop_c,pop_h)
-    SE <- c()
-    for (i in 1:1000){
-      p_hat <-mean(c(rbinom(n_c,1,p_c),rbinom(n_h,1,p_h))) # overall prevalence
-      SE[i] <- (p_hat-p_c)^2
-    }
-    MSE_s[counter] <- mean(SE)
-  }
-}
-
-(compare_MSE <- data.frame(prevalence_cai=prev_c,prevalence_hai=prev_h,MSE_formula=MSE_s,MSE_simul=MSE_f,MSEdiff=abs(MSE_s - MSE_f),MSE_diff_percent=round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)))
-
-```
-
 
 ### 1.2. In case of $k$ hospitals
 Each hospital is characterized by four parameters. 
@@ -163,109 +120,47 @@ We suppose the resistance prevalence among CAI ($p_c$) remains constant in all h
 So the MSE will be represented by a set of parameters $(n_{c1},\dots,n_{ck},n_{h1},\dots,n_{hk},p_c,p_{h1},\dots,p_{hk},)$
 
 $$
-\hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})} \ \ \ (10)
+\hat{p_c} =\frac{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}p_c +n_{hi}p_{hi})}{\displaystyle\sum_{1 \leqslant i  \leqslant k}(n_{ci}+n_{hi})} 
 $$
 
 And
 
 $$
-\mbox{MSE}\left(\hat{p_c}\right) = \frac{\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\left(1-\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\right)}{\sum_{}(n_{ci}+n_{hi})}+\left(\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}-p_c\right)^2  \ \ \ (11)
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\left(1-\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}\right)}{\sum_{}(n_{ci}+n_{hi})}+\left(\frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})}{\sum_{}(n_{ci}+n_{hi})}-p_c\right)^2
 $$
 
 
 which gives
 
 $$
-\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}(n_{ci}+n_{hi}))^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2  \ \ \ (12)
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}(n_{ci}p_c +n_{hi}p_{hi})\sum_{}(n_{ci}q_c +n_{hi}q_{hi})}{(\sum_{}(n_{ci}+n_{hi}))^3} + \left(\frac{\sum_{}n_{hi}(p_{hi}-p_c)}{\sum_{}(n_{ci}+n_{hi})}\right)^2
 $$
 
-```{r echo=FALSE}
+Assign
 
-# Simulation MSE for two hospitals
-# set params
+Number of resistance patients in hospital i: 
+$$
+a_i=n_{ci}p_c +n_{hi}p_{hi};
+$$
+Number of non-resistance patients in hospital i: 
+$$
+b_i=n_{ci}q_c +n_{hi}q_{hi};
+$$
+Total patients
+$$
+a_i+b_i=n_{ci}+n_{hi};
+$$
+$$
+a - n_{hi}(p_{hi}-p_c)=n_{ci}p_c +n_{hi}p_{hi}- n_{hi}(p_{hi}-p_c)=n_{ci}p_c + n_{hi}p_c = (a_i+b_i)p_c
+$$
+so,
+$$
+ n_{hi}(p_{hi}-p_c) = a_i-(a_i+b_i)p_c=a_iq_c-b_ip_c
+$$
 
-p_c <- 0.3
-q_c <- 1-p_c
-p_h1 <- 0.5
-q_h1 <- 1-p_h1
-p_h2 <- 0.7
-q_h2 <- 1-p_h2
-n_c1 <- 700
-n_c2 <- 1000
-n_h1 <- 100
-n_h2 <- 500
-
-p_f <- (n_c1*p_c+n_h1*p_h1+n_c2*p_c+n_h2*p_h2)/(n_c1+n_h1+n_c2+n_h2)
-var_f <- (n_c1*p_c+n_h1*p_h1+n_c2*p_c+n_h2*p_h2)*(n_c1*q_c+n_h1*q_h1+n_c2*q_c+n_h2*q_h2)/((n_c1+n_h1+n_c2+n_h2)^3)
-bias2_f <- ((n_h1*(p_h1-p_c)+n_h2*(p_h2-p_c))/(n_c1+n_h1+n_c2+n_h2))^2
-MSE_f <- var_f+bias2_f
-
-SE <- c()
-loop <- 1000
-for (i in 1:loop){
-  p_hat <-mean(c(rbinom(n_c1,1,p_c),rbinom(n_h1,1,p_h1),rbinom(n_c2,1,p_c),rbinom(n_h2,1,p_h2))) # overall prevalence
-  SE[i] <- (p_hat-p_c)^2
-}
-MSE_s <- mean(SE)
-
-
-```
-**Validation in case of 2 hospitals**
-
-Validation result using parameter set $(p_c,p_h,n_c,n_h)$ of two hospitals: (`r p_c`, `r p_h1`, `r n_c1`, `r n_h1`) and (`r p_c`, `r p_h2`, `r n_c2`, `r n_h2`)
-
-Using formula (12), estimated p = `r p_f` ; MSE = `r MSE_f`
-
-Using simulation with `r loop` loops, p = `r p_hat`; MSE = `r MSE_s`
-
-MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)` percent of MSE obtained by formula.
-
-
-```{r echo=FALSE}
-
-# Simulation MSE for three hospitals
-# set params
-
-p_c <- 0.3
-q_c <- 1-p_c
-p_h1 <- 0.5
-q_h1 <- 1-p_h1
-p_h2 <- 0.7
-q_h2 <- 1-p_h2
-p_h3 <- 0.8
-q_h3 <- 1-p_h3
-
-n_c1 <- 700
-n_c2 <- 1000
-n_c3 <- 600
-n_h1 <- 100
-n_h2 <- 500
-n_h3 <- 100
-
-p_f <- (n_c1*p_c+n_h1*p_h1+n_c2*p_c+n_h2*p_h2+n_c3*p_c+n_h3*p_h3)/(n_c1+n_h1+n_c2+n_h2+n_c3+n_h3)
-var_f <- (n_c1*p_c+n_h1*p_h1+n_c2*p_c+n_h2*p_h2+n_c3*p_c+n_h3*p_h3)*(n_c1*q_c+n_h1*q_h1+n_c2*q_c+n_h2*q_h2+n_c3*q_c+n_h3*q_h3)/((n_c1+n_h1+n_c2+n_h2+n_c3+n_h3)^3)
-bias2_f <- ((n_h1*(p_h1-p_c)+n_h2*(p_h2-p_c)+n_h3*(p_h3-p_c))/(n_c1+n_h1+n_c2+n_h2+n_c3+n_h3))^2
-MSE_f <- var_f+bias2_f
-
-SE <- c()
-loop <- 1000
-for (i in 1:loop){
-  p_hat <-mean(c(rbinom(n_c1,1,p_c),rbinom(n_h1,1,p_h1),rbinom(n_c2,1,p_c),rbinom(n_h2,1,p_h2),rbinom(n_c3,1,p_c),rbinom(n_h3,1,p_h3))) # overall prevalence
-  SE[i] <- (p_hat-p_c)^2
-}
-MSE_s <- mean(SE)
-
-
-```
-**Validation in case of 3 hospitals**
-
-Validation result using parameter set $(p_c,p_h,n_c,n_h)$ of three hospitals: (`r p_c`, `r p_h1`, `r n_c1`, `r n_h1`), (`r p_c`, `r p_h2`, `r n_c2`, `r n_h2`) and (`r p_c`, `r p_h3`, `r n_c3`, `r n_h3`)
-
-Using formula (12), estimated p = `r p_f` ; MSE = `r MSE_f`
-
-Using simulation with `r loop` loops, p = `r p_hat`; MSE = `r MSE_s`
-
-MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)` percent of MSE obtained by formula.
+$$
+\mbox{MSE}\left(\hat{p_c}\right) = \frac{\sum_{}a_i\sum_{}b_i}{(\sum_{}(a_i+b_i))^3} + \frac{(\sum_{}(a_iq_c-b_ip_c))^2}{(\sum_{}(a_{i}+b_{i}))^2} \ \ \ (1)
+$$
 
 
 ## 2. Variation of MSE
@@ -284,76 +179,16 @@ Hospitals are considered as same type if they have same parameters.
 
 Given $t_1$ hospitals having $(n_c,n_h,p_c,p_h),\ q_c=1-p_c,\ q_h=1-p_h$.
 
-$$
-MSE=\frac{t_1(n_{c}p_c +n_{h}p_{h})t_1(n_{c}q_c +n_{h}q_{h})}
-{(t_1(n_{c}+n_{h}))^3} +
-\frac{(t_1(n_{h}(p_{h}-p_c)))^2}
-{(t_1(n_{c}+n_{h}))^2}  \ \ \ (13)
-$$
-
-
+using (1), 
 
 $$
-MSE=\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}
-{t_1(n_{c}+n_{h})^3} +
-\frac{n_{h}^2(p_{h}-p_c)^2}
-{(n_{c}+n_{h})^2}   \ \ \ (14)
+MSE=\frac{(t_1a_1)(t_1b_1)}{(t_1(a_1+b_1))^3}+\frac{t_1^2(a_1q_c-b_1p_c)^2}{t_1^2(a_1+b_1)^2}
 $$
 
 
-$p_h$ and $p_c$ are constant. Assign $r=\frac{n_c}{n_h}$ and $n=n_c+n_h$
-
-The bias $(\frac{n_{h}^2(p_{h}-p_c)^2}{(n_{c}+n_{h})^2})$ depends on $\frac{n_{h}}{(n_{c}+n_{h})}$ = $\frac{1}{(r+1)}$. $r$ is constant in one hospital (but we do not know the true value). So the bias is constant.
-
-The variance $\frac{(n_{c}p_c +n_{h}p_{h})(n_{c}q_c +n_{h}q_{h})}{t_1(n_{c}+n_{h})^3}$ depends on number of hospital $t_1$ and sample size in one hospital $n$. 
-
-```{r echo=FALSE}
-
-# Simulation MSE for t1 hospitals of same type
-# set params
-
-p_c <- 0.3
-q_c <- 1-p_c
-p_h1 <- 0.5
-q_h1 <- 1-p_h1
-n_c1 <- 700
-n_h1 <- 100
-t1 <- 10
-
-p_f <- (t1*n_c1*p_c+t1*n_h1*p_h1)/(t1*n_c1+t1*n_h1)
-var_f <- (n_c1*p_c+n_h1*p_h1)*(n_c1*q_c+n_h1*q_h1)/(t1*(n_c1+n_h1)^3)
-bias2_f <- (n_h1^2*(p_h1-p_c)^2)/(n_c1+n_h1)^2
-MSE_f <- var_f+bias2_f
-
-SE <- c()
-loop <- 1000
-for (i in 1:loop){
-  p_hat <-mean(c(rbinom(t1*n_c1,1,p_c),rbinom(t1*n_h1,1,p_h1))) # overall prevalence
-  SE[i] <- (p_hat-p_c)^2
-}
-MSE_s <- mean(SE)
-
-
-```
-
-
-
 $$
-variance=\frac{(rp_c +p_{h})(rq_c +q_{h})}{t_1n(r+1)^2}   \ \ \ (15)
+MSE=\frac{a_1b_1}{t_1(a_1+b_1)^3}+\frac{(a_1q_c-b_1p_c)^2}{(a_1+b_1)^2}
 $$
-
- Thus, the variance depends on number of hospital $t_1$ and sample size in one hospital $n$.
-
-**Validation in case of $t_1$ hospitals of same type**
-
-Validation result using parameter set $(p_c,p_h,n_c,n_h)$ of t1 hospitals: (`r p_c`, `r p_h1`, `r n_c1`, `r n_h1`)
-
-Using formula (14), estimated p = `r p_f` ; MSE = `r MSE_f`
-
-Using simulation with `r loop` loops, p = `r p_hat`; MSE = `r MSE_s`
-
-MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)` percent of MSE obtained by formula.
-
 
 
 ### 2.2. Two types of hospital
@@ -361,55 +196,11 @@ MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r roun
 Given $t_1$ hospitals having $(n_{c1},n_{h1},p_c,p_{h1}),\ q_c=1-p_c,\ q_{h1}=1-p_{h1}$ and $t_2$ hospitals having $(n_{c2},n_{h2},p_c,p_{h2}),\ q_{h2}=1-p_{h2}$.
 
 $$
-MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3} +
-\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}   \ \ \ (16)
+MSE=\frac{(t_1a_1+t_2a_2)(t_1b_1+t_2b_2)}
+{(t_1(a_1+b_1)+t_2(a_2+b_2))^3} +
+\frac{(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c))^2}
+{(t_1(a_1+b_1)+t_2(a_2+b_2))^2}
 $$
-
-```{r echo=FALSE}
-
-# Simulation MSE for t1 and t2 hospitals
-# set params
-
-p_c <- 0.3
-q_c <- 1-p_c
-p_h1 <- 0.5
-q_h1 <- 1-p_h1
-n_c1 <- 700
-n_h1 <- 100
-p_h2 <- 0.6
-q_h2 <- 1-p_h2
-n_c2 <- 800
-n_h2 <- 100
-t1 <- 8
-t2 <- 2
-
-p_f <- (t1*n_c1*p_c+t1*n_h1*p_h1+t2*n_c2*p_c+t2*n_h2*p_h2)/(t1*n_c1+t1*n_h1+t2*n_c2+t2*n_h2)
-var_f <- (t1*(n_c1*p_c+n_h1*p_h1)+t2*(n_c2*p_c+n_h2*p_h2))*(t1*(n_c1*q_c+n_h1*q_h1)+t2*(n_c2*q_c+n_h2*q_h2)) / ((t1*(n_c1+n_h1)+t2*(n_c2+n_h2))^3)
-bias2_f <- (t1*n_h1*(p_h1-p_c)+t2*n_h2*(p_h2-p_c))^2/(t1*(n_c1+n_h1)+t2*(n_c2+n_h2))^2
-MSE_f <- var_f+bias2_f
-
-SE <- c()
-loop <- 1000
-for (i in 1:loop){
-  p_hat <-mean(c(rbinom(t1*n_c1,1,p_c),rbinom(t1*n_h1,1,p_h1),rbinom(t2*n_c2,1,p_c),rbinom(t2*n_h2,1,p_h2))) # overall prevalence
-  SE[i] <- (p_hat-p_c)^2
-}
-MSE_s <- mean(SE)
-
-```
-
-**Validation in case of $t_1$ hospitals of type 1 and $t_2$ hospitals of type 2**
-
-Validation result using parameter set $(p_c,p_h,n_c,n_h)$ of t1 hospitals of type 1 (`r p_c`, `r p_h1`, `r n_c1`, `r n_h1`) and t2 hospitals of type 2 (`r p_c`, `r p_h2`, `r n_c2`, `r n_h2`)
-
-Using formula (14), estimated p = `r p_f` ; MSE = `r MSE_f`
-
-Using simulation with `r loop` loops, p = `r p_hat`; MSE = `r MSE_s`
-
-MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)` percent of MSE obtained by formula.
-
 
 
 ### 2.3. Three types of hospital
@@ -417,90 +208,132 @@ MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r roun
 Given $t_1$ hospitals having $(n_{c1},n_{h1},p_c,p_{h1}),\ q_c=1-p_c,\ q_{h1}=1-p_{h1}$, $t_2$ hospitals having $(n_{c2},n_{h2},p_c,p_{h2}),\ q_{h2}=1-p_{h2}$ and  $t_3$ hospitals having $(n_{c3},n_{h3},p_c,p_{h3}),\ q_{h3}=1-p_{h3}$.
 
 $$
-MSE=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2})+t_3(n_{c3}p_c +n_{h3}p_{h3}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))+t_3(n_{c3}q_c +n_{h3}q_{h3}))}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^3} +
-\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c)+t_3n_{h3}(p_{h3}-p_c))^2}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2})+t_3(n_{c3}+n_{h3}))^2}   \ \ \ (17)
+MSE=\frac{(t_1a_1+t_2a_2+t_3a_3)(t_1b_1+t_2b_2+t_3b_3)}
+{(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^3} +
+\frac{(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c)+t_3(a_3q_c-b_3p_c))^2}
+{(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^2}
+$$
+
+### 2.4. Compare variance, bias and MSE between different models
+
+#### 2.4.1. One type of hospital
+We compare first surveillance system ($t_1$ hospitals of type 1) and second system ($t_2$ hospitals of type 1).
+
+$$
+\frac{V_2}{V_1}=\frac{\frac{a_1b_1}{t_2(a_1+b_1)^3}}{\frac{a_1b_1}{t_1(a_1+b_1)^3}}=\frac{t_1}{t_2}
 $$
 
 
-```{r echo=FALSE}
-
-# Simulation MSE for t1, t2 and t3 hospitals
-# set params
-
-p_c <- 0.3
-q_c <- 1-p_c
-
-p_h1 <- 0.5
-q_h1 <- 1-p_h1
-n_c1 <- 700
-n_h1 <- 100
-
-p_h2 <- 0.6
-q_h2 <- 1-p_h2
-n_c2 <- 800
-n_h2 <- 100
-
-p_h3 <- 0.4
-q_h3 <- 1-p_h3
-n_c3 <- 600
-n_h3 <- 200
-
-t1 <- 8
-t2 <- 2
-t3 <- 4
-
-p_f <- (t1*n_c1*p_c+t1*n_h1*p_h1+t2*n_c2*p_c+t2*n_h2*p_h2+t3*n_c3*p_c+t3*n_h3*p_h3)/(t1*n_c1+t1*n_h1+t2*n_c2+t2*n_h2+t3*n_c2+t3*n_h3)
-var_f <- (t1*(n_c1*p_c+n_h1*p_h1)+t2*(n_c2*p_c+n_h2*p_h2)+t3*(n_c3*p_c+n_h3*p_h3))*(t1*(n_c1*q_c+n_h1*q_h1)+t2*(n_c2*q_c+n_h2*q_h2)+t3*(n_c3*q_c+n_h3*q_h3)) / ((t1*(n_c1+n_h1)+t2*(n_c2+n_h2)+t3*(n_c3+n_h3))^3)
-bias2_f <- (t1*n_h1*(p_h1-p_c)+t2*n_h2*(p_h2-p_c)+t3*n_h3*(p_h3-p_c))^2/(t1*(n_c1+n_h1)+t2*(n_c2+n_h2)+t3*(n_c3+n_h3))^2
-MSE_f <- var_f+bias2_f
-
-SE <- c()
-loop <- 1000
-for (i in 1:loop){
-  p_hat <-mean(c(rbinom(t1*n_c1,1,p_c),rbinom(t1*n_h1,1,p_h1),rbinom(t2*n_c2,1,p_c),rbinom(t2*n_h2,1,p_h2),rbinom(t3*n_c3,1,p_c),rbinom(t3*n_h3,1,p_h3))) # overall prevalence
-  SE[i] <- (p_hat-p_c)^2
-}
-MSE_s <- mean(SE)
-
-```
-
-**Validation in case of $t_1$ hospitals of type 1, $t_2$ hospitals of type 2 and $t_3$ hospitals of type 3**
-
-Validation result using parameter set $(p_c,p_h,n_c,n_h)$ of t1 hospitals of type 1 (`r p_c`, `r p_h1`, `r n_c1`, `r n_h1`), t2 hospitals of type 2 (`r p_c`, `r p_h2`, `r n_c2`, `r n_h2`) and  t3 hospitals of type 3 (`r p_c`, `r p_h3`, `r n_c3`, `r n_h3`)
-
-Using formula (14), estimated p = `r p_f` ; MSE = `r MSE_f`
-
-Using simulation with `r loop` loops, p = `r p_hat`; MSE = `r MSE_s`
-
-MSE difference = `r round(abs(MSE_s - MSE_f),digit=4)`, that corresponds `r round(100*abs(MSE_s - MSE_f)/MSE_f,digits = 1)` percent of MSE obtained by formula.
+$$
+B_1=B_2=\frac{(a_1q_c-b_1p_c)^2}{(a_1+b_1)^2}
+$$
 
 
+$$
+\frac{MSE_2}{MSE_1} = \frac{V_2+B_2}{V_1+B_1}= \frac{\frac{t_1}{t_2}V_1+B_1}{V_1+B_1}
+$$
+
+We note that $MSE_2<MSE_1$ if $t_2>t_1$ and versus.
 
 
-### 2.4. Compare bias, variance and MSE between three cases
-
-#### 2.4.1. One type vesus two types of hospital (same number of hospital)
+#### 2.4.2. One type vesus two types of hospital (same number of hospital)
 
 We compare first surveillance system ($t_1+t_2$ hospitals of type 1) and second system ($t_1$ hospitals of type 1 and $t_2$ hospitals of type 2)
 
-Bias comparison
-
 $$
-\Delta B=\frac{(t_1n_{h1}(p_{h1}-p_c)+t_2n_{h2}(p_{h2}-p_c))^2}{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^2}-
-\frac{n_{h1}^2(p_{h1}-p_c)^2}{(n_{c1}+n_{h1})^2}   \ \ \ (18)
+\delta_V=\frac{V_2}{V_1}=\frac{\frac{(t_1a_1+t_2a_2)(t_1b_1+t_2b_2)}
+{(t_1(a_1+b_1)+t_2(a_2+b_2))^3}}
+{\frac{a_1b_1}{(t_1+t_2)(a_1+b_1)^3}}
+=
+\frac{(t_1a_1+t_2a_2)(t_1b_1+t_2b_2)(t_1+t_2)(a_1+b_1)^3}
+{a_1b_1(t_1(a_1+b_1)+t_2(a_2+b_2))^3}
 $$
-
-Variance comparison
-
 $$
-\Delta V=\frac{(t_1(n_{c1}p_c +n_{h1}p_{h1})+t_2(n_{c2}p_c +n_{h2}p_{h2}))(t_1(n_{c1}q_c +n_{h1}q_{h1})+t_2(n_{c2}q_c +n_{h2}q_{h2}))}
-{(t_1(n_{c1}+n_{h1})+t_2(n_{c2}+n_{h2}))^3}-
-\frac{(n_{c1}p_c +n_{h1}p_{h1})(n_{c1}q_c +n_{h1}q_{h1})}
-{(t_1+t_2)(n_{c1}+n_{h1})^3}   \ \ \ (19)
+\delta_V=
+\frac{(a_1+\frac{t_2}{t_1}a_2)(b_1+\frac{t_2}{t_1}b_2)(1+\frac{t_2}{t_1})(a_1+b_1)^3}
+{a_1b_1((a_1+b_1)+\frac{t_2}{t_1}(a_2+b_2))^3}
 $$
 
 
-How $\Delta B$ and $\Delta V$ vary in function of $t_1$ and $t_2$?
+$$
+\delta_B=\frac{B_2}{B_1}=\frac{\frac{(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c))^2}
+{(t_1(a_1+b_1)+t_2(a_2+b_2))^2}}
+{\frac{(a_1q_c-b_1p_c)^2}{(a_1+b_1)^2}}
+$$
+
+$$
+\delta_B=\frac{(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c))^2(a_1+b_1)^2}
+{(t_1(a_1+b_1)+t_2(a_2+b_2))^2(a_1q_c-b_1p_c)^2}
+$$
+$$
+\delta_B=\frac{((a_1q_c-b_1p_c)+\frac{t_2}{t_1}(a_2q_c-b_2p_c))^2(a_1+b_1)^2}
+{((a_1+b_1)+\frac{t_2}{t_1}(a_2+b_2))^2(a_1q_c-b_1p_c)^2}
+$$
+
+When $\frac{t_2}{t_1} \to 0$
+
+$\delta_V \to 1$ and $\delta_B \to 1$. That means 2 systems are identical
+
+When $\frac{t_2}{t_1} \to \infty$: 
+$$
+\delta_V \to \frac{a_2b_2(a_1+b_1)^3}{a_1b_1(a_2+b_2)^3}
+$$
+$$
+\delta_B=\frac{(a_2q_c-b_2p_c)^2(a_1+b_1)^2}
+{(a_2+b_2)^2(a_1q_c-b_1p_c)^2}
+$$
+
+$$
+\frac{MSE_2}{MSE_1}=\frac{\delta_VV_2+\delta_BB_2}{V_1+B_1}
+$$
+
+#### 2.4.3. Three types of hospital
+
+We compare first surveillance system ($t_1$ hospitals of type 1, $t_2$ hospitals of type 2 and $t_3$ hospitals of type 3) and second surveillance system ($t_4$, $t_5$ and $t_6$ hospitals of type 1, 2 and 3, respectively).
+
+$$
+\delta_V=\frac{V_2}{V_1}=\frac{\frac{(t_4a_4+t_5a_5+t_6a_6)(t_4b_4+t_5b_5+t_6b_6)}{(t_4(a_4+b_4)+t_5(a_5+b_5)+t_6(a_6+b_6))^3}}
+{\frac{(t_1a_1+t_2a_2+t_3a_3)(t_1b_1+t_2b_2+t_3b_3)}{(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^3}}
+$$
+$$
+\delta_V=\frac{(t_4a_4+t_5a_5+t_6a_6)(t_4b_4+t_5b_5+t_6b_6)(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^3}{(t_4(a_4+b_4)+t_5(a_5+b_5)+t_6(a_6+b_6))^3(t_1a_1+t_2a_2+t_3a_3)(t_1b_1+t_2b_2+t_3b_3)}
+$$
+
+$$
+\delta_B=\frac{B_2}{B_1}=\frac{\frac{(t_4(a_4q_c-b_4p_c)+t_5(a_5q_c-b_5p_c)+t_6(a_6q_c-b_6p_c))^2}
+{(t_4(a_4+b_4)+t_5(a_5+b_5)+t_6(a_6+b_6))^2}}
+{\frac{(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c)+t_3(a_3q_c-b_3p_c))^2}
+{(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^2}}
+$$
+$$
+\delta_B=\frac{(t_4(a_4q_c-b_4p_c)+t_5(a_5q_c-b_5p_c)+t_6(a_6q_c-b_6p_c))^2(t_1(a_1+b_1)+t_2(a_2+b_2)+t_3(a_3+b_3))^2}
+{(t_4(a_4+b_4)+t_5(a_5+b_5)+t_6(a_6+b_6))^2(t_1(a_1q_c-b_1p_c)+t_2(a_2q_c-b_2p_c)+t_3(a_3q_c-b_3p_c))^2}
+$$
+
+> Simulation
+
+
+2. MSE of 3 hospital types 
+We calculate MSE of estimated resistance prevalence of model having three hospital types with $(n_1,n_2,n_3)$ hospitals per type. $n_1:2 \to 3,n_2:0 \to 2,n_3:0\to 1$ hospitals.
+We calculate the difference of MSE obtained by two method:
+$P_d = \frac{MSE_f-MSE_s}{MSE_s}$
+
+A boxplot will be used to illustrated the variation of this difference. The mean of difference must be equal to 0.
+
+
+3. Compare two systems
+
+First model has three hospital types with $(n_1, n_2, n_3)$ hospitals per type. $n_1: 2 \to 3, n_2: 0 \to 3, n_3: 0 \to 2$ hospitals.
+
+First model has three hospital types with $(n_4, n_5, n_6)$ hospitals per type. $n_4: 3 \to 4, n_4=5: 0 \to 3, n_6: 0 \to 2$ hospitals.
+
+Resistance prevalence in CAI varies from $0.1 \to 0.3$
+
+Resistance prevalence in HAI of each hospital is randomly chosen from $0.4 \to 0.9$
+
+We compare the $\frac{MSE_2}{MSE_1}$ ratio returned by formula (3) and by simulation.
+```{r echo=FALSE}
+
+```
+
 
